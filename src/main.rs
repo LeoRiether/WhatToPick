@@ -135,7 +135,7 @@ fn pick(tree: &Tree) {
     let mut t = tree;
     while !t.children.is_empty() {
         let options = t.children.iter().map(|n| &n.key).collect();
-        let select = Select::new("Pick one", options)
+        let select = Select::new("", options)
             .with_vim_mode(true);
         let res = select.raw_prompt().unwrap();
 
