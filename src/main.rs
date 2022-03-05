@@ -23,7 +23,8 @@ FLAG:
     -h, --help  Shows this message
     -e, --edit  Edits the PICK_TREE_ID file
     -f, --file  Outputs the path for the PICK_TREE_ID file
-    no flag     Interactively helps you pick one of the options
+    -l, --list  Lists the pick trees you've created
+    no flag     Interactively helps you pick one of the options from a selected tree
 
 PICK_TREE file format:
     It's a tree where siblings are in the same indentation level and children
@@ -60,6 +61,15 @@ fn spawn_editor(file: &Path) -> Result<(), Box<dyn Error>> {
         .arg(file)
         .spawn()?
         .wait()?;
+    Ok(())
+}
+
+fn list_files<P: AsRef<Path>>(path: P) -> Result<(), Box<dyn Error>> {
+    fs::read_dir(path)?
+        .map(|entry| entry.unwrap())
+        .filter(|entry| entry.path().is_file())
+        .map(|entry| println!("{}", entry.file_name().to_string_lossy()))
+        .count();
     Ok(())
 }
 
@@ -164,6 +174,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Print the file path
     else if flags.contains("--file") || flags.contains("-f") {
         println!("{}", file.to_string_lossy());
+    }
+    // Lists the trees you've created
+    else if flags.contains("--list") || flags.contains("-l") {
+        list_files(&dir)?;
     }
     // Interactively decide what to pick
     else {
